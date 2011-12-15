@@ -1,0 +1,11 @@
+h1 Contacts
+
+form(action='/organization/new', method='post')
+	input(type='text', name='title', placeholder='organization')
+	input(type='text', name='name', placeholder='contact')
+	input(type='submit', value='add')
+
+#contacts
+	- for o in contacts
+		div #{o.name_first} #{o.name_last}
+			a(href="/contact/#{o.id}/delete") remove

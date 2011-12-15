@@ -1,2 +1,14 @@
-h1= title
-p Welcome to #{title}
+h1 #{title} demo
+
+header Organizations
+
+form(action='/organization/new', method='post')
+	input(type='text', name='title', placeholder='organization')
+	input(type='text', name='name', placeholder='contact')
+	input(type='submit', value='add')
+
+#organizations
+	- for o in orgs
+		div= o.title
+			a(href="/contact/#{o.contacts[0]._id}") #{o.contacts[0].name_first || ''}
+			a(href="/organization/#{o.id}/delete") remove

@@ -4,5 +4,7 @@
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'Express' })
+	orgs = Organization.find({}, function(err, arr) {
+		res.render('index', { title: 'Express', orgs: arr});		
+	}); 
 };

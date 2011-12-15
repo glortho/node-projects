@@ -11,35 +11,42 @@ var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/pms');
 
 var Schema = mongoose.Schema,
-	ObjectId = Schema.ObjectId;
+	ObjectId = Schema.ObjectId,
+	ContactSchema = new	Schema({
+		organization	: ObjectId,
+		name_first		: String,
+		name_last		: String,
+		digits			: [Digit]
+	}),
+	OrganizationSchema = new Schema({
+		title		: String,
+		street		: String,
+		city		: String,
+		state		: String,
+		zip			: String
+	}),
+	DigitSchema = new Schema({
+		digits		: String,
+		type		: String
+	});
 
-var OrganizationSchema = new Schema({
-	title		: String,
-	street		: String,
-	city		: String,
-	state		: String,
-	zip			: String,
-	contacts	: [Contact]
-});
+ContactSchema
+	.virtual('name_full')
+	.get(function() {
+		return this.name_first + ' ' + this.name_last;
+	})
+	.set(function(full_name) {
+		var split = full_name.split(' '),
+			firstName = split[0],
+			lastName = split[1];
 
-var ContactSchema = new	Schema({
-	organization	: ObjectId,
-	first_name		: String,
-	last_name		: String,
-	digits			: [Digit]
-});
-
-var DigitSchema = new Schema({
-	digits		: String,
-	type		: String
-});
+		this.set('name_first', firstName);
+		this.set('name_last', lastName);
+	});
 
 var Organization = mongoose.model('Organization', OrganizationSchema),
 	Contact = mongoose.model('Contact', ContactSchema),
 	Digit = mongoose.model('Digit', DigitSchema);
-
-
-var Receipt = mongoose.model('Receipt', ReceiptSchema);
 
 var app = module.exports = express.createServer();
 
@@ -51,6 +58,10 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
+  app.use(require("stylus").middleware({
+	src: __dirname + "/public",
+	compress: true
+  }));
   app.use(express.static(__dirname + '/public'));
 });
 
@@ -64,7 +75,43 @@ app.configure('production', function(){
 
 // Routes
 
-app.get('/', routes.index);
+app.get('/', function(req, res){
+	Organization.find({}, function(err, orgs) {
+		res.render('index', { title: 'Express', orgs: orgs || [] });		
+	}); 
+});
+app.post('/organization/new', function(req, res){
+	var org = new Organization({title: req.body.title}),
+
+	org.save(function(err) {
+		if (err) {
+			console.log(err);
+			res.render('index', { title: 'Error', orgs: []});
+		} else {
+			contact = new Contact({
+				name_full: req.body.name,
+				organization: org._id
+			});
+			contact.save(function(err) {
+				if ( err ) {
+					console.log(err);
+				} else {
+					res.redirect('/');
+				}
+			});
+		}
+	});
+});
+app.get('/organization/:id/delete', function(req, res) {
+	Organization.remove({_id: req.params.id}, function() {
+		res.redirect('/');
+	});
+});
+app.get('/contact/:id', function(req, res) {
+	Contact.find({}, function(err, arr) {
+		res.render('contact', {title: 'Contacts', contacts: arr});
+	});
+});
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
