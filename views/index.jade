@@ -10,5 +10,5 @@ form(action='/organization/new', method='post')
 #organizations
 	- for o in orgs
 		div= o.title
-			a(href="/contact/#{o.contacts[0]._id}") #{o.contacts[0].name_first || ''}
+			a(href="/contact/#{contact._id}") #{o.contacts[0].name_first || ''}
 			a(href="/organization/#{o.id}/delete") remove

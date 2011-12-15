@@ -76,8 +76,8 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', function(req, res){
-	Organization.find({}, function(err, orgs) {
-		res.render('index', { title: 'Express', orgs: orgs || [] });		
+	orgs = Organization.find({}).populate('contact', ['name_full']).run(function(err, contact) {
+		res.render('index', { title: 'Express', orgs: orgs || [] });				
 	}); 
 });
 app.post('/organization/new', function(req, res){
