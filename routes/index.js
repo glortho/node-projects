@@ -1,10 +1,9 @@
+var fs = require('fs');
 
-/*
- * GET home page.
- */
-
-exports.index = function(req, res){
-	orgs = Organization.find({}, function(err, arr) {
-		res.render('index', { title: 'Express', orgs: arr});		
-	}); 
+module.exports = function(app, models){
+    fs.readdirSync(__dirname).forEach(function(file) {
+        if (file == "index.js") return;
+        var name = file.substr(0, file.indexOf('.'));
+        require('./' + name)(app, models);
+    });
 };
