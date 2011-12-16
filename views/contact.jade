@@ -1,11 +1,6 @@
-h1 Contacts
+h1= title
 
-form(action='/organization/new', method='post')
-	input(type='text', name='title', placeholder='organization')
-	input(type='text', name='name', placeholder='contact')
-	input(type='submit', value='add')
-
-#contacts
-	- for o in contacts
-		div #{o.name_first} #{o.name_last}
-			a(href="/contacts/#{o.id}/delete") remove
+#contact
+	div= contact.name_full
+		- if (contact.organization)
+			a(href='/organizations/#{contact.organization._id}')= contact.organization.title

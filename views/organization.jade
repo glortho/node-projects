@@ -1,0 +1,12 @@
+h1= title
+
+#organization
+	div= org.title
+	br
+	div Contacts
+		form(action='/contacts/new', method='post')
+			input(type='text', name='name_full', placeholder='name')
+			input(type='submit', value='add')
+		- for c in org.contacts
+			div
+				a(href='/contacts/#{c._id}')= c.name_full

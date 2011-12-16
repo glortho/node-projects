@@ -76,16 +76,22 @@ app.configure('production', function(){
 
 // Routes
 
-app.get('/', function(req, res){
-	// Organization.find({}, function(err, orgs) {
-	// 	res.render('index', {title: 'Express', orgs: orgs || []});
-	// });
+app.get('/.:format?', function(req, res){
 	Organization.find({}).populate('contacts').run(function(err, orgs) {
 		console.log(orgs);
 		res.render('index', { title: 'Express', orgs: orgs || [] });						
 	});
 });
-app.post('/organization/new', function(req, res){
+app.get('/organizations/:id.:format?', function(req, res) {
+	Organization.findById(req.params.id).populate('contacts').run(function(err, org) {
+		if ( err ) {
+			console.log(err);
+		} else {
+			res.render('organization', {title: 'Organization: ' + org.title, org: org});
+		}
+	});
+});
+app.post('/organizations/new.:format?', function(req, res){
 	var org = new Organization({title: req.body.title});
 
 	org.save(function(err) {
@@ -110,18 +116,47 @@ app.post('/organization/new', function(req, res){
 		}
 	});
 });
-app.get('/organization/:id/delete', function(req, res) {
+app.get('/organizations/:id/delete.:format?', function(req, res) {
 	Organization.remove({_id: req.params.id}, function() {
 		res.redirect('/');
 	});
 });
-app.get('/contacts', function(req, res) {
-	Contact.find({}).populate('organization').run(function(err, contacts) {
-		console.log(contacts);
-		res.render('contact', {title: 'Contacts', contacts: contacts});
+app.get('/contacts.:format?', function(req, res) {
+	Contact.find({}).populate('organization', ['title', '_id']).run(function(err, contacts) {
+		if ( req.params.format != 'json' ) {
+			res.render('contacts', {title: 'Contacts', contacts: contacts});
+		} else {
+			res.send(contacts);
+		}
 	});
 });
-app.get('/contacts/:id/delete', function(req, res) {
+app.get('/contacts/:id.:format?', function(req, res) {
+	Contact.findOne({_id: req.params.id}).populate('organization', ['title', '_id']).run(function(err, contact) {
+		console.log(contact);
+		res.render('contact', {title: 'Contact: ' + contact.name_full, contact: contact});
+	});
+});
+app.post('/contacts/new.:format?', function(req, res) {
+	var contact = new Contact({name_full: req.body.name}),
+		orgname = req.body.name;
+
+	contact.save(function(err) {
+		if ( err ) {
+			console.log(err);
+		} else {
+			Organization.findOne({title: orgname}, function(err, org) {
+				var organization = err ? new Organization({title: orgname}).save() : org ;
+
+				organization.contacts.push(contact._id);
+				contact.organization = organization;
+				organization.save();
+				contact.save();
+				res.redirect('/');
+			});	
+		}
+	});
+});
+app.get('/contacts/:id/delete.:format?', function(req, res) {
 	Contact.remove({_id: req.params.id}, function() {
 		res.redirect('/contacts');
 	});
