@@ -13,7 +13,7 @@ mongoose.connect('mongodb://localhost/pms');
 var Schema = mongoose.Schema,
 	ObjectId = Schema.ObjectId,
 	ContactSchema = new	Schema({
-		organization	: ObjectId,
+		organization	: {type: ObjectId, ref: 'Organization'},
 		name_first		: String,
 		name_last		: String,
 		digits			: [Digit]
@@ -23,7 +23,8 @@ var Schema = mongoose.Schema,
 		street		: String,
 		city		: String,
 		state		: String,
-		zip			: String
+		zip			: String,
+		contacts	: [{ type: ObjectId, ref: 'Contact'}]
 	}),
 	DigitSchema = new Schema({
 		digits		: String,
@@ -76,12 +77,16 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', function(req, res){
-	orgs = Organization.find({}).populate('contact', ['name_full']).run(function(err, contact) {
-		res.render('index', { title: 'Express', orgs: orgs || [] });				
-	}); 
+	// Organization.find({}, function(err, orgs) {
+	// 	res.render('index', {title: 'Express', orgs: orgs || []});
+	// });
+	Organization.find({}).populate('contacts').run(function(err, orgs) {
+		console.log(orgs);
+		res.render('index', { title: 'Express', orgs: orgs || [] });						
+	});
 });
 app.post('/organization/new', function(req, res){
-	var org = new Organization({title: req.body.title}),
+	var org = new Organization({title: req.body.title});
 
 	org.save(function(err) {
 		if (err) {
@@ -96,7 +101,10 @@ app.post('/organization/new', function(req, res){
 				if ( err ) {
 					console.log(err);
 				} else {
-					res.redirect('/');
+					org.contacts.push(contact._id);
+					org.save(function(err, org) {
+						res.redirect('/');
+					});
 				}
 			});
 		}
@@ -107,9 +115,15 @@ app.get('/organization/:id/delete', function(req, res) {
 		res.redirect('/');
 	});
 });
-app.get('/contact/:id', function(req, res) {
-	Contact.find({}, function(err, arr) {
-		res.render('contact', {title: 'Contacts', contacts: arr});
+app.get('/contacts', function(req, res) {
+	Contact.find({}).populate('organization').run(function(err, contacts) {
+		console.log(contacts);
+		res.render('contact', {title: 'Contacts', contacts: contacts});
+	});
+});
+app.get('/contacts/:id/delete', function(req, res) {
+	Contact.remove({_id: req.params.id}, function() {
+		res.redirect('/contacts');
 	});
 });
 

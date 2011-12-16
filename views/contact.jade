@@ -8,4 +8,4 @@ form(action='/organization/new', method='post')
 #contacts
 	- for o in contacts
 		div #{o.name_first} #{o.name_last}
-			a(href="/contact/#{o.id}/delete") remove
+			a(href="/contacts/#{o.id}/delete") remove
