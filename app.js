@@ -9,9 +9,9 @@ var express = require('express'),
 	mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	models = require('./models')(Schema, mongoose),
+	Organization = models.Organization,
 	
-	app = module.exports = express.createServer(),
-	routes = require('./routes')(app, models);
+	app = module.exports = express.createServer();
 
 mongoose.connect('mongodb://localhost/pms');
 
@@ -23,7 +23,7 @@ app.configure(function(){
 	app.set('view engine', 'jade');
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
-	app.use(app.router);
+	// app.use(app.router);
 	app.use(require("stylus").middleware({
 		src: __dirname + "/public",
 		compress: true
@@ -32,23 +32,32 @@ app.configure(function(){
 });
 
 app.configure('development', function(){
-	app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 app.configure('production', function(){
-	app.use(express.errorHandler()); 
+	app.use(express.errorHandler());
 });
 
 
 // routes (mostly in ./routes)
 
+routes = require('./routes')(app, models);
+
 app.get('/.:format?', function(req, res){
 	Organization.find({}).populate('contacts').run(function(err, orgs) {
-		console.log(orgs);
-		res.render('index', { title: 'Express', orgs: orgs || [] });						
+		res.render('index', { title: 'Express', orgs: orgs || [] });
 	});
 });
 
+for ( var r in routes ) {
+	if (routes.hasOwnProperty(r)) {
+		app.get( '/' + r + '.:format?'				, routes[r].index);
+		app.post('/' + r + '/new.:format?'			, routes[r].create);
+		app.get( '/' + r + '/:id.:format?'			, routes[r].show);
+		app.get( '/' + r + '/:id/delete.:format?'	, routes[r].destroy);
+	}
+}
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
