@@ -7,8 +7,7 @@ var express = require('express'),
 	stylus = require('stylus'),
 
 	mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
-	models = require('./models')(Schema, mongoose),
+	models = require('./models')(mongoose),
 	Organization = models.Organization,
 	
 	app = module.exports = express.createServer();
@@ -23,7 +22,7 @@ app.configure(function(){
 	app.set('view engine', 'jade');
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
-	// app.use(app.router);
+	app.use(app.router);
 	app.use(require("stylus").middleware({
 		src: __dirname + "/public",
 		compress: true
