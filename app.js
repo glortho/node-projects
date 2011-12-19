@@ -41,13 +41,13 @@ app.configure('production', function(){
 
 // routes (mostly in ./routes)
 
-routes = require('./routes')(app, models);
-
 app.get('/.:format?', function(req, res){
 	Organization.find({}).populate('contacts').run(function(err, orgs) {
 		res.render('index', { title: 'Express', orgs: orgs || [] });
 	});
 });
+
+var routes = require('./routes')(app, models);
 
 for ( var r in routes ) {
 	if (routes.hasOwnProperty(r)) {
