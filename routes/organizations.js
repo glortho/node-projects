@@ -1,14 +1,16 @@
-module.exports = function(app, models) {
+module.exports = function(app, models, lib) {
 	var Organization = models.Organization,
 		Contact = models.Contact;
 
 	return {
 		index: function(req, res) {
-			Organization.find({}, function(err, orgs) {
+			Organization.find({}).populate('contacts', ['_id', 'name_full']).run(function(err, orgs) {
 				if ( err ) {
 					console.log(err);
 				} else {
-					res.send(orgs);
+					return lib.is_json(req) ?
+						res.send(orgs) :
+						res.render('organizations'); // TODO
 				}
 			});
 		},
@@ -40,6 +42,7 @@ module.exports = function(app, models) {
 						} else {
 							org.contacts.push(contact._id);
 							org.save(function(err, org) {
+
 								res.redirect('/');
 							});
 						}

@@ -1,4 +1,25 @@
 $(function() {
+
+	// contacts
+
+	pmt.Contact = Backbone.Model.extend({
+		
+	});
+
+	pmt.ContactList = Backbone.Collection.extend({
+		model: pmt.Contact,
+		url: '/contacts'
+	});
+
+	pmt.Contacts = new pmt.ContactList;
+
+	pmt.ContactView = Backbone.View.extend({
+		
+	});
+
+
+	// organizations
+
 	pmt.Organization = Backbone.Model.extend({
 		
 	});
@@ -23,11 +44,12 @@ $(function() {
 	pmt.AppView = Backbone.View.extend({
 		el: $('#body-wrapper'),
 		events: {
-			"keypress #organization-title":  "createOnEnter"
+			"submit #organization-form":  "createOnEnter"
 		},
 
 		initialize: function() {
-			this.input = $('#organization-title');
+			this.title_input = document.getElementById('organization-title');
+			this.contact_input = document.getElementById('contact-name');
 			pmt.Organizations.bind('add', this.addOne, this);
 			pmt.Organizations.bind('reset', this.addAll, this);
 			pmt.Organizations.bind('all', this.render, this);
@@ -44,10 +66,13 @@ $(function() {
 		},
 
 		createOnEnter: function(e) {
-			var text = this.input.val();
-			if (!text || e.keyCode != 13) return true;
-			pmt.Organizations.create({title: text});
-			this.input.val('');
+			var title = this.title_input.value,
+				name = this.contact_input.value;
+
+			if (title) {
+				pmt.Organizations.create({title: title, contact: name});
+				this.title_input.value = '';
+			}
 			return false;
 		},
 

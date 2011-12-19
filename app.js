@@ -9,6 +9,8 @@ var express = require('express'),
 	mongoose = require('mongoose'),
 	models = require('./models')(mongoose),
 	Organization = models.Organization,
+
+	lib = require('./lib'),
 	
 	app = module.exports = express.createServer();
 
@@ -47,7 +49,9 @@ app.get('/.:format?', function(req, res){
 	});
 });
 
-var routes = require('./routes')(app, models);
+var routes = require('./routes')(app, models, lib);
+
+// generic restful routes
 
 for ( var r in routes ) {
 	if (routes.hasOwnProperty(r)) {

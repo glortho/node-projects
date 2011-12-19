@@ -1,4 +1,4 @@
-module.exports = function(app, models) {
+module.exports = function(app, models, lib) {
 	var Organization = models.Organization,
 		Contact = models.Contact;
 
