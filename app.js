@@ -55,10 +55,10 @@ var routes = require('./routes')(app, models, lib);
 
 for ( var r in routes ) {
 	if (routes.hasOwnProperty(r)) {
-		app.get( '/' + r + '.:format?'				, routes[r].index);
-		app.post('/' + r + '.:format?'				, routes[r].create);
-		app.get( '/' + r + '/:id.:format?'			, routes[r].show);
-		app.get( '/' + r + '/:id/delete.:format?'	, routes[r].destroy);
+		app.get( '/' + r + '.:format?'		, routes[r].index);
+		app.post('/' + r + '.:format?'		, routes[r].create);
+		app.get( '/' + r + '/:id.:format?'	, routes[r].show);
+		app.del( '/' + r + '/:id.:format?'	, routes[r].destroy);
 	}
 }
 

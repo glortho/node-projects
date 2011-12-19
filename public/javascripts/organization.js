@@ -1,4 +1,5 @@
 $(function() {
+	Backbone.Model.prototype.idAttribute = "_id"; // need this for mongodb/mongoose
 
 	// contacts
 
@@ -34,6 +35,26 @@ $(function() {
 	pmt.OrganizationView = Backbone.View.extend({
 		tagName: 'div',
 		template: _.template(document.getElementById('tmpl-organization-item').innerHTML),
+		events: {
+			'click .remove': 'clear'
+		},
+
+		initialize: function() {
+			this.model.bind('destroy', this.remove, this);
+		},
+
+		clear: function() {
+			console.log(this);
+			this.model.destroy({
+				success: function() {
+					console.log('destroy success');
+				}
+			});
+		},
+
+		remove: function() {
+			$(this.el).remove();
+		},
 
 		render: function() {
 			$(this.el).html(this.template(this.model.toJSON()));
@@ -72,6 +93,8 @@ $(function() {
 			if (title) {
 				pmt.Organizations.create({title: title, contact: name});
 				this.title_input.value = '';
+				this.contact_input.value = '';
+				this.title_input.focus();
 			}
 			return false;
 		},

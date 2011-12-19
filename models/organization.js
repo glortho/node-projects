@@ -5,8 +5,9 @@ function make(Schema, mongoose) {
 		city		: String,
 		state		: String,
 		zip			: String,
-		contacts	: [{ type: Schema.ObjectId, ref: 'Contact'}]
+		contacts	: [{type: Schema.ObjectId, ref: 'Contact'}]
 	});
+
 	return mongoose.model('Organization', OrganizationSchema);
 }
 

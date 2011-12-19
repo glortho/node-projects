@@ -4,10 +4,11 @@ module.exports = function(app, models, lib) {
 
 	return {
 		index: function(req, res) {
-			Organization.find({}).populate('contacts', ['_id', 'name_full']).run(function(err, orgs) {
+			Organization.find({}).populate('contacts').run(function(err, orgs) {
 				if ( err ) {
 					console.log(err);
 				} else {
+					console.log(orgs);
 					return lib.is_json(req) ?
 						res.send(orgs) :
 						res.render('organizations'); // TODO
@@ -33,7 +34,7 @@ module.exports = function(app, models, lib) {
 					res.render('index', { title: 'Error', orgs: []});
 				} else {
 					contact = new Contact({
-						name_full: req.body.name,
+						name_full: req.body.contact,
 						organization: org._id
 					});
 					contact.save(function(err) {
@@ -41,9 +42,13 @@ module.exports = function(app, models, lib) {
 							console.log(err);
 						} else {
 							org.contacts.push(contact._id);
-							org.save(function(err, org) {
-
-								res.redirect('/');
+							org.save(function(err) {
+								var output = {_id: org._id, title: org.title, contacts: [contact]};
+								if ( lib.is_json(req) ) {
+									res.send(output);
+								} else {
+									res.redirect('/');
+								}
 							});
 						}
 					});
@@ -53,7 +58,11 @@ module.exports = function(app, models, lib) {
 
 		destroy: function(req, res) {
 			Organization.remove({_id: req.params.id}, function() {
-				res.redirect('/');
+				if ( lib.is_json(req) ) {
+					res.send({code: 200});
+				} else {
+					res.redirect('/');
+				}
 			});
 		}
 	};

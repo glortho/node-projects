@@ -3,7 +3,7 @@ function make(Schema, mongoose) {
 		organization	: {type: Schema.ObjectId, ref: 'Organization'},
 		name_first		: String,
 		name_last		: String
-	});	
+	});
 
 	ContactSchema
 		.virtual('name_full')
