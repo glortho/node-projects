@@ -1,14 +1,15 @@
 h1 #{title} demo
 
-header Organizations
+#organization-wrapper
+	header Organizations
 
-form(action='/organizations/new', method='post')
-	input(type='text', name='title', placeholder='organization')
-	input(type='text', name='name', placeholder='contact')
-	input(type='submit', name='submit', value='add')
+	form(method='post', id='organization-form', onsubmit='return false;')
+		input(type='text', id='organization-title', name='title', placeholder='organization')
+		input(type='text', name='name', placeholder='contact')
+		input(type='submit', name='submit', value='add')
 
-#organizations
+	#organizations
 
-script(type='text/template', id='tmpl-organization-item')
-	|	<a href='/organizations/<%= _id %>'><%= title %></a>
-	|	<a class='remove' href='/organizations/<%= _id %>/delete'>remove</a>
+	script(type='text/template', id='tmpl-organization-item')
+		|	<a href='/organizations/<%= _id %>'><%= title %></a>
+		|	<a class='remove' href='/organizations/<%= _id %>/delete'>remove</a>

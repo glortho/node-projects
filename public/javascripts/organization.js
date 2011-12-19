@@ -14,10 +14,6 @@ $(function() {
 		tagName: 'div',
 		template: _.template(document.getElementById('tmpl-organization-item').innerHTML),
 
-		remove: function() {
-			$(this.el).remove();
-		},
-
 		render: function() {
 			$(this.el).html(this.template(this.model.toJSON()));
 			return this;
@@ -26,8 +22,12 @@ $(function() {
 
 	pmt.AppView = Backbone.View.extend({
 		el: $('#body-wrapper'),
+		events: {
+			"keypress #organization-title":  "createOnEnter"
+		},
 
 		initialize: function() {
+			this.input = $('#organization-title');
 			pmt.Organizations.bind('add', this.addOne, this);
 			pmt.Organizations.bind('reset', this.addAll, this);
 			pmt.Organizations.bind('all', this.render, this);
@@ -41,6 +41,14 @@ $(function() {
 		addOne: function(org) {
 			var view = new pmt.OrganizationView({model: org});
 			this.$("#organizations").append(view.render().el);
+		},
+
+		createOnEnter: function(e) {
+			var text = this.input.val();
+			if (!text || e.keyCode != 13) return true;
+			pmt.Organizations.create({title: text});
+			this.input.val('');
+			return false;
 		},
 
 		render: function() {

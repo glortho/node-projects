@@ -52,7 +52,7 @@ var routes = require('./routes')(app, models);
 for ( var r in routes ) {
 	if (routes.hasOwnProperty(r)) {
 		app.get( '/' + r + '.:format?'				, routes[r].index);
-		app.post('/' + r + '/new.:format?'			, routes[r].create);
+		app.post('/' + r + '.:format?'				, routes[r].create);
 		app.get( '/' + r + '/:id.:format?'			, routes[r].show);
 		app.get( '/' + r + '/:id/delete.:format?'	, routes[r].destroy);
 	}
