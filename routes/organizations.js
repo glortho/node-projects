@@ -3,6 +3,15 @@ module.exports = function(app, models) {
 		Contact = models.Contact;
 
 	return {
+		index: function(req, res) {
+			Organization.find({}, function(err, orgs) {
+				if ( err ) {
+					console.log(err);
+				} else {
+					res.send(orgs);
+				}
+			});
+		},
 		show: function(req, res) {
 			Organization.findById(req.params.id).populate('contacts').run(function(err, org) {
 				if ( err ) {
