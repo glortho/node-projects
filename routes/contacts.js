@@ -5,7 +5,7 @@ module.exports = function(app, models, lib) {
 	return {
 		index: function(req, res) {
 			Contact.find({}).populate('organization', ['title', '_id']).run(function(err, contacts) {
-				if ( req.params.format != 'json' ) {
+				if ( !lib.is_json(req) ) {
 					res.render('contacts', {title: 'Contacts', contacts: contacts});
 				} else {
 					res.send(contacts);

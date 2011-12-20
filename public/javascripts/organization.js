@@ -15,8 +15,76 @@ $(function() {
 	pmt.Contacts = new pmt.ContactList;
 
 	pmt.ContactView = Backbone.View.extend({
-		
+		tagName: 'div',
+		template: _.template(document.getElementById('tmpl-contact-item').innerHTML),
+		events: {
+			'click .remove': 'clear'
+		},
+
+		initialize: function() {
+			this.model.bind('destroy', this.remove, this);
+		},
+
+		clear: function() {
+			this.model.destroy();
+		},
+
+		remove: function() {
+			$(this.el).remove();
+		},
+
+		render: function() {
+			var json = this.model.toJSON();
+
+			if (!json.organization) json.organization = null;
+			$(this.el).html(this.template(json));
+			return this;
+		}
 	});
+
+	pmt.ContactTabView = Backbone.View.extend({
+		el: $('#contacts-wrapper'),
+		events: {
+			"submit #contact-form":  "createOnEnter"
+		},
+
+		initialize: function() {
+			this.contact_input = document.getElementById('contact-name-full');
+			this.organization_input = document.getElementById('contact-organization-title');
+			pmt.Contacts.bind('add', this.addOne, this);
+			pmt.Contacts.bind('reset', this.addAll, this);
+			pmt.Contacts.bind('all', this.render, this);
+			pmt.Contacts.fetch();
+		},
+
+		addAll: function() {
+			pmt.Contacts.each(this.addOne);
+		},
+
+		addOne: function(contact) {
+			var view = new pmt.ContactView({model: contact});
+			this.$("#contacts").append(view.render().el);
+		},
+
+		createOnEnter: function(e) {
+			var org = this.organization_input.value,
+				name = this.contact_input.value;
+
+			if (title) {
+				pmt.Contacts.create({name_full: name, organization: org});
+				this.organization_input.value = '';
+				this.contact_input.value = '';
+				this.contact_input.focus();
+			}
+			return false;
+		},
+
+		render: function() {
+				
+		}
+	});
+
+	pmt.ContactTab = new pmt.ContactTabView;
 
 
 	// organizations
@@ -44,12 +112,7 @@ $(function() {
 		},
 
 		clear: function() {
-			console.log(this);
-			this.model.destroy({
-				success: function() {
-					console.log('destroy success');
-				}
-			});
+			this.model.destroy();
 		},
 
 		remove: function() {
@@ -62,8 +125,8 @@ $(function() {
 		}
 	});
 
-	pmt.AppView = Backbone.View.extend({
-		el: $('#body-wrapper'),
+	pmt.OrgTabView = Backbone.View.extend({
+		el: $('#organizations-wrapper'),
 		events: {
 			"submit #organization-form":  "createOnEnter"
 		},
@@ -104,5 +167,5 @@ $(function() {
 		}
 	});
 
-	pmt.App = new pmt.AppView;
+	pmt.OrgTab = new pmt.OrgTabView;
 });
