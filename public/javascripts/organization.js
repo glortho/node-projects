@@ -134,7 +134,7 @@ $(function() {
 		initialize: function() {
 			this.title_input = document.getElementById('organization-title');
 			this.contact_input = document.getElementById('contact-name');
-			pmt.Organizations.bind('add', this.addOne, this);
+			pmt.Organizations.bind('add', this.append, this);
 			pmt.Organizations.bind('reset', this.addAll, this);
 			pmt.Organizations.bind('all', this.render, this);
 			pmt.Organizations.fetch();
@@ -146,7 +146,25 @@ $(function() {
 
 		addOne: function(org) {
 			var view = new pmt.OrganizationView({model: org});
-			this.$("#organizations").append(view.render().el);
+			$("#organizations").append(view.render().el);
+		},
+
+		append: function(org) {
+			this.addOne(org);
+
+			var attrs = org.attributes,
+				contact = attrs.contacts[0],
+				cmodel = {
+					_id: contact._id,
+					name_first: contact.name_first,
+					name_last: contact.name_last,
+					organization: {
+						_id: attrs._id,
+						title: attrs.title
+					}
+				};
+
+			pmt.ContactTab.addOne(new pmt.Contact(cmodel));
 		},
 
 		createOnEnter: function(e) {

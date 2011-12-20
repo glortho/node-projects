@@ -22,11 +22,11 @@
 
 script(type='text/template', id='tmpl-organization-item')
 	|	<a href='/organizations/<%= _id %>'><%= title %></a>
-	|	<%= contacts[0].name_first + ' ' + contacts[0].name_last %>
+	|	<%= typeof contacts[0] != 'undefined' ? (contacts[0].name_first || '') + ' ' + (contacts[0].name_last || '') : '' %>
 	|	<a class='remove' href='#'>remove</a>
 
 script(type='text/template', id='tmpl-contact-item')
-	|	<a href='/contacts/<%= _id %>'><%= name_first + ' ' + name_last %></a>
+	|	<a href='/contacts/<%= _id %>'><%= (name_first || '') + ' ' + (typeof name_last != 'undefined' ? name_last : '') %></a>
 	|	<% if ( organization ) {
 	|		print(organization.title)
 	| 	} %>
