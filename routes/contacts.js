@@ -4,7 +4,7 @@ module.exports = function(app, models, lib) {
 
 	return {
 		index: function(req, res) {
-			Contact.find({}).populate('organization', ['title', '_id']).run(function(err, contacts) {
+			Contact.find({}, function(err, contacts) {
 				if ( !lib.is_json(req) ) {
 					res.render('contacts', {title: 'Contacts', contacts: contacts});
 				} else {
@@ -20,22 +20,13 @@ module.exports = function(app, models, lib) {
 		},
 
 		create: function(req, res) {
-			var contact = new Contact({name_full: req.body.name}),
-				orgname = req.body.name;
+			var contact = new Contact({name_full: req.body.name_full});
 
 			contact.save(function(err) {
 				if ( err ) {
 					console.log(err);
 				} else {
-					Organization.findOne({title: orgname}, function(err, org) {
-						var organization = err ? new Organization({title: orgname}).save() : org ;
-
-						organization.contacts.push(contact._id);
-						contact.organization = organization;
-						organization.save();
-						contact.save();
-						res.redirect('/');
-					});
+					res.send(contact);
 				}
 			});
 		},

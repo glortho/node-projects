@@ -36,7 +36,6 @@ $(function() {
 		render: function() {
 			var json = this.model.toJSON();
 
-			if (!json.organization) json.organization = null;
 			$(this.el).html(this.template(json));
 			return this;
 		}
@@ -49,8 +48,7 @@ $(function() {
 		},
 
 		initialize: function() {
-			this.contact_input = document.getElementById('contact-name-full');
-			this.organization_input = document.getElementById('contact-organization-title');
+			this.contact_input = document.getElementById('contact-name');
 			pmt.Contacts.bind('add', this.addOne, this);
 			pmt.Contacts.bind('reset', this.addAll, this);
 			pmt.Contacts.bind('all', this.render, this);
@@ -67,12 +65,10 @@ $(function() {
 		},
 
 		createOnEnter: function(e) {
-			var org = this.organization_input.value,
-				name = this.contact_input.value;
+			var name = this.contact_input.value;
 
-			if (title) {
-				pmt.Contacts.create({name_full: name, organization: org});
-				this.organization_input.value = '';
+			if (name) {
+				pmt.Contacts.create({name_full: name});
 				this.contact_input.value = '';
 				this.contact_input.focus();
 			}
@@ -85,6 +81,42 @@ $(function() {
 	});
 
 	pmt.ContactTab = new pmt.ContactTabView;
+
+	pmt.ContactSubTabView = Backbone.View.extend({
+		initialize: function(options) {
+			this.el = options.el;
+			this.contact_input = document.getElementById('contact-sub-name');
+			pmt.Contacts.bind('add', this.addOne, this);
+			pmt.Contacts.bind('reset', this.addAll, this);
+			pmt.Contacts.bind('all', this.render, this);
+			pmt.Contacts.fetch();
+		},
+
+		addAll: function() {
+			pmt.Contacts.each(this.addOne);
+		},
+
+		addOne: function(contact) {
+			var view = new pmt.ContactView({model: contact});
+			this.el.append(view.render().el);
+		},
+
+		createOnEnter: function(e) {
+			var name = this.contact_input.value;
+
+			if (name) {
+				pmt.Contacts.create({name_full: name});
+				this.contact_input.value = '';
+				this.contact_input.focus();
+			}
+			return false;
+		},
+
+		render: function() {
+				
+		}
+	});
+
 
 
 	// organizations
@@ -134,7 +166,7 @@ $(function() {
 		initialize: function() {
 			this.title_input = document.getElementById('organization-title');
 			this.contact_input = document.getElementById('contact-name');
-			pmt.Organizations.bind('add', this.append, this);
+			pmt.Organizations.bind('add', this.addOne, this);
 			pmt.Organizations.bind('reset', this.addAll, this);
 			pmt.Organizations.bind('all', this.render, this);
 			pmt.Organizations.fetch();
@@ -149,32 +181,30 @@ $(function() {
 			$("#organizations").append(view.render().el);
 		},
 
-		append: function(org) {
-			this.addOne(org);
+		// append: function(org) {
+		// 	this.addOne(org);
 
-			var attrs = org.attributes,
-				contact = attrs.contacts[0],
-				cmodel = {
-					_id: contact._id,
-					name_first: contact.name_first,
-					name_last: contact.name_last,
-					organization: {
-						_id: attrs._id,
-						title: attrs.title
-					}
-				};
+		// 	var attrs = org.attributes,
+		// 		contact = attrs.contacts[0],
+		// 		cmodel = {
+		// 			_id: contact._id,
+		// 			name_first: contact.name_first,
+		// 			name_last: contact.name_last,
+		// 			organization: {
+		// 				_id: attrs._id,
+		// 				title: attrs.title
+		// 			}
+		// 		};
 
-			pmt.ContactTab.addOne(new pmt.Contact(cmodel));
-		},
+		// 	pmt.ContactTab.addOne(new pmt.Contact(cmodel));
+		// },
 
 		createOnEnter: function(e) {
-			var title = this.title_input.value,
-				name = this.contact_input.value;
+			var title = this.title_input.value;
 
 			if (title) {
-				pmt.Organizations.create({title: title, contact: name});
+				pmt.Organizations.create({title: title});
 				this.title_input.value = '';
-				this.contact_input.value = '';
 				this.title_input.focus();
 			}
 			return false;
