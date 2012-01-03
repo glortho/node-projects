@@ -7,34 +7,37 @@ window.pmt = {
 		});
 
 		$('#content').on('click', '.expandable', function() {
-			var $this = $(this);
+			var $this = $(this),
+				$parent = $this.parent(), id;
 
 			if ( $this.data('expanded') ) {
-				$this
-					.data('expanded', false)
-					.parent()
-						.animate({
-							width: '-=300px',
-							height: '-=200px'
-						}, 500, function() {
-							$(this).css({
-								'border-color': 'white'
-							});
+				$this.data('expanded', false);
+				$parent
+					.animate({
+						width: '-=300px',
+						height: '-=200px'
+					}, 500, function() {
+						$(this).css({
+							'border-color': 'white'
 						});
+					})
+					.children().not('.expandable').remove();
+						
+				delete pmt.ContactSubTab;
 			} else {
-				$this
-					.data('expanded', true)
-					.parent()
-						.css({
-							'border-color': '#ccc'
-						})
-						.animate({
-							width: '+=300px',
-							height: '+=200px'
-						}, 500);
+				id = $parent[0].id.split('-')[1];
+				$this.data('expanded', true);
+				$parent
+					.css({
+						'border-color': '#ccc'
+					})
+					.animate({
+						width: '+=300px',
+						height: '+=200px'
+					}, 500);
 				
-				pmt.ContactSubTab = new pmt.ContactTabView({
-					el: $this.parent()
+				pmt.ContactSubTab = new pmt.ContactSubTabView({
+					id: id
 				});
 			}
 		});

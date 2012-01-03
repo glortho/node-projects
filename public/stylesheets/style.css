@@ -2,10 +2,15 @@ body{font-family:Verdana;font-size:10pt}
 header{color:#666;font-size:12pt;font-weight:bold;margin-bottom:5px}
 a{margin-left:5px;color:#666;text-decoration:none;}
 a.selected{font-weight:bold}
-form{padding:10px;background-color:#ddd;}
-form input{font-size:16pt;margin-right:10px}
+form.main{padding:10px;background-color:#ddd;}
+form.main input{font-size:16pt;margin-right:10px}
+form.submain{padding:5px;}
+form.submain input{font-size:12pt;width:288px}
 .button{font-size:14pt;padding:5px;margin-left:0;border:1pt #ddd solid;background-color:#ddd;text-align:right}
+.item{text-align:left}
 .section div{font-size:22pt;margin:5px 0 10px 0}
 .tab{display:inline;border:1pt #666 solid;border-bottom-style:none;padding:8px;font-size:12pt}
 .body{border:1pt #666;border-top-style:solid;margin-top:8px}
+.sub-contact{position:relative;}
+.sub-contact .item{font-size:12pt;display:block;margin:4px}
 #tabs{margin-top:20px}

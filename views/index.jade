@@ -4,14 +4,14 @@
 
 #content.body
 	#organizations-wrapper.wrapper
-		form(method='post', id='organization-form', onsubmit='return false;')
+		form(class='main', method='post', id='organization-form', onsubmit='return false;')
 			input(type='text', id='organization-title', name='title', placeholder='organization')
 			input(type='submit', name='submit', value='add')
 
 		#organizations.section
 
 	#contacts-wrapper.wrapper(style='display:none')
-		form(method='post', id='contact-form', onsubmit='return false;')
+		form(class='main', method='post', id='contact-form', onsubmit='return false;')
 			input(type='text', id='contact-name', name='name', placeholder='contact')
 			input(type='submit', name='submit', value='add')
 
@@ -27,5 +27,10 @@ script(type='text/template', id='tmpl-contact-item')
 	|	<a href='/contacts/<%= _id %>'><%= (name_first || '') + ' ' + (typeof name_last != 'undefined' ? name_last : '') %></a>
 	|	<a class='remove button' href='#'>remove</a>
 
-script(type='text/template', id='tmpl-sub-contact-item')
+script(type='text/template', id='tmpl-sub-contact')
 	|	<%= name_first + ' ' + name_last %>
+
+script(type='text/template', id='tmpl-sub-contact-form')
+	|	<form id='subform' class='submain' action="#" method="post" accept-charset="utf-8" style='position:absolute;left:0px;top:0px' onsubmit='return false;'>
+	|		<input type="text" name="name" value="" placeholder="contact"/>
+	|	</form>	

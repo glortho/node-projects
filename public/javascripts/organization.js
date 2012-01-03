@@ -3,25 +3,33 @@ $(function() {
 
 	// contacts
 
+		// models
+
 	pmt.Contact = Backbone.Model.extend({
 		
 	});
+
+		// collections
 
 	pmt.ContactList = Backbone.Collection.extend({
 		model: pmt.Contact,
 		url: '/contacts'
 	});
 
+
 	pmt.Contacts = new pmt.ContactList;
+
+		// views
 
 	pmt.ContactView = Backbone.View.extend({
 		tagName: 'div',
-		template: _.template(document.getElementById('tmpl-contact-item').innerHTML),
+		className: 'item',
 		events: {
 			'click .remove': 'clear'
 		},
 
-		initialize: function() {
+		initialize: function(options) {
+			this.template = _.template(document.getElementById(options.template_id).innerHTML);
 			this.model.bind('destroy', this.remove, this);
 		},
 
@@ -38,6 +46,48 @@ $(function() {
 
 			$(this.el).html(this.template(json));
 			return this;
+		}
+	});
+
+	pmt.ContactSubTabView = Backbone.View.extend({
+		initialize: function(options) {
+			_.bindAll(this);
+			this.el = $('#contacts-' + options.id).on('submit', '#subform', this.createOnEnter);
+			this.org = pmt.Organizations._byId[options.id];
+			pmt.ContactsForOrg = new pmt.ContactList(this.org.attributes.contacts);
+			pmt.ContactsForOrg.url = this.org.url() + '/add_contact';
+			pmt.ContactsForOrg.bind('add', this.addOne, this);
+			pmt.ContactsForOrg.bind('reset', this.addAll, this);
+			pmt.ContactsForOrg.bind('all', this.render, this);
+			this.form = _.template(document.getElementById('tmpl-sub-contact-form').innerHTML);
+			this.el.append(this.form);
+			this.input = this.el.find('input')[0];
+			this.addAll();
+		},
+
+		addAll: function() {
+			pmt.ContactsForOrg.each(this.addOne);
+		},
+
+		addOne: function(contact) {
+			var view = new pmt.ContactView({
+				model: contact,
+				template_id: 'tmpl-sub-contact'
+			});
+			this.el.append(view.render().el);
+		},
+		createOnEnter: function(e) {
+			var name = this.input.value;
+
+			if (name) {
+				pmt.ContactsForOrg.create({name_full: name});
+				this.input.value = '';
+				this.input.focus();
+			}
+			return false;
+		},
+		render: function() {
+
 		}
 	});
 
@@ -60,7 +110,10 @@ $(function() {
 		},
 
 		addOne: function(contact) {
-			var view = new pmt.ContactView({model: contact});
+			var view = new pmt.ContactView({
+				model: contact,
+				template_id: 'tmpl-contact-item'
+			});
 			this.$("#contacts").append(view.render().el);
 		},
 
@@ -81,41 +134,6 @@ $(function() {
 	});
 
 	pmt.ContactTab = new pmt.ContactTabView;
-
-	pmt.ContactSubTabView = Backbone.View.extend({
-		initialize: function(options) {
-			this.el = options.el;
-			this.contact_input = document.getElementById('contact-sub-name');
-			pmt.Contacts.bind('add', this.addOne, this);
-			pmt.Contacts.bind('reset', this.addAll, this);
-			pmt.Contacts.bind('all', this.render, this);
-			pmt.Contacts.fetch();
-		},
-
-		addAll: function() {
-			pmt.Contacts.each(this.addOne);
-		},
-
-		addOne: function(contact) {
-			var view = new pmt.ContactView({model: contact});
-			this.el.append(view.render().el);
-		},
-
-		createOnEnter: function(e) {
-			var name = this.contact_input.value;
-
-			if (name) {
-				pmt.Contacts.create({name_full: name});
-				this.contact_input.value = '';
-				this.contact_input.focus();
-			}
-			return false;
-		},
-
-		render: function() {
-				
-		}
-	});
 
 
 
