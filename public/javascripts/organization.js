@@ -38,7 +38,16 @@ $(function() {
 		},
 
 		remove: function() {
+			var id = this.model.id,
+				org = this.model.attributes.organization;
+
 			$(this.el).remove();
+
+			if (this.options.type && this.options.type == 'sub') {
+				pmt.Contacts._byId[id].destroy();
+			} else if ( org && pmt.ContactSubTab[org] ) {
+				pmt.ContactSubTab[org].Contacts.remove(this.model);
+			}
 		},
 
 		render: function() {
@@ -54,11 +63,12 @@ $(function() {
 			_.bindAll(this);
 			this.el = $('#contacts-' + options.id).on('submit', '#subform', this.createOnEnter);
 			this.org = pmt.Organizations._byId[options.id];
-			pmt.ContactsForOrg = new pmt.ContactList(this.org.attributes.contacts);
-			pmt.ContactsForOrg.url = this.org.url() + '/add_contact';
-			pmt.ContactsForOrg.bind('add', this.addOne, this);
-			pmt.ContactsForOrg.bind('reset', this.addAll, this);
-			pmt.ContactsForOrg.bind('all', this.render, this);
+			this.Contacts = new pmt.ContactList(this.org.attributes.contacts);
+			this.Contacts.url = this.org.url() + '/add_contact';
+			this.Contacts.bind('add', this.addOne, this);
+			this.Contacts.bind('reset', this.addAll, this);
+			this.Contacts.bind('all', this.render, this);
+			this.Contacts.bind('remove', this.remove, this);
 			this.form = _.template(document.getElementById('tmpl-sub-contact-form').innerHTML);
 			this.el.append(this.form);
 			this.input = this.el.find('input')[0];
@@ -66,25 +76,30 @@ $(function() {
 		},
 
 		addAll: function() {
-			pmt.ContactsForOrg.each(this.addOne);
+			this.Contacts.each(this.addOne);
 		},
 
 		addOne: function(contact) {
 			var view = new pmt.ContactView({
 				model: contact,
-				template_id: 'tmpl-sub-contact'
+				template_id: 'tmpl-sub-contact',
+				type: 'sub'
 			});
 			this.el.append(view.render().el);
+			if ( !pmt.Contacts._byId[contact.id] ) pmt.Contacts.add(contact);
 		},
 		createOnEnter: function(e) {
 			var name = this.input.value;
 
 			if (name) {
-				pmt.ContactsForOrg.create({name_full: name});
+				this.Contacts.create({name_full: name});
 				this.input.value = '';
 				this.input.focus();
 			}
 			return false;
+		},
+		remove: function(contact) {
+			$('#sub-contact-' + contact.id).remove();
 		},
 		render: function() {
 

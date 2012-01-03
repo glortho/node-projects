@@ -1,4 +1,6 @@
 window.pmt = {
+	ContactSubTab: {},
+
 	init: function() {
 		var that = this;
 		$('#tabs').find('a').on('click', function() {
@@ -8,7 +10,8 @@ window.pmt = {
 
 		$('#content').on('click', '.expandable', function() {
 			var $this = $(this),
-				$parent = $this.parent(), id;
+				$parent = $this.parent(),
+				id = $parent[0].id.split('-')[1];
 
 			if ( $this.data('expanded') ) {
 				$this.data('expanded', false);
@@ -21,11 +24,8 @@ window.pmt = {
 							'border-color': 'white'
 						});
 					})
-					.children().not('.expandable').remove();
-						
-				delete pmt.ContactSubTab;
+					.children().not('.expandable').hide();
 			} else {
-				id = $parent[0].id.split('-')[1];
 				$this.data('expanded', true);
 				$parent
 					.css({
@@ -36,9 +36,12 @@ window.pmt = {
 						height: '+=200px'
 					}, 500);
 				
-				pmt.ContactSubTab = new pmt.ContactSubTabView({
-					id: id
-				});
+				if ( !pmt.ContactSubTab[id] ) {
+					pmt.ContactSubTab[id] = new pmt.ContactSubTabView({id: id });
+				} else {
+					console.log('here');
+					$parent.children().show();
+				}
 			}
 		});
 	},
