@@ -39,7 +39,6 @@ window.pmt = {
 				if ( !pmt.ContactSubTab[id] ) {
 					pmt.ContactSubTab[id] = new pmt.ContactSubTabView({id: id });
 				} else {
-					console.log('here');
 					$parent.children().show();
 				}
 			}

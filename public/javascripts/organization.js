@@ -64,15 +64,19 @@ $(function() {
 			this.el = $('#contacts-' + options.id).on('submit', '#subform', this.createOnEnter);
 			this.org = pmt.Organizations._byId[options.id];
 			this.Contacts = new pmt.ContactList(this.org.attributes.contacts);
-			this.Contacts.url = this.org.url() + '/add_contact';
-			this.Contacts.bind('add', this.addOne, this);
-			this.Contacts.bind('reset', this.addAll, this);
-			this.Contacts.bind('all', this.render, this);
-			this.Contacts.bind('remove', this.remove, this);
+			this.Contacts.url = this.org.url() + '/contact';
+			this.bind();
 			this.form = _.template(document.getElementById('tmpl-sub-contact-form').innerHTML);
 			this.el.append(this.form);
 			this.input = this.el.find('input')[0];
 			this.addAll();
+		},
+
+		bind: function() {
+			this.Contacts.bind('add', this.addOne, this);
+			this.Contacts.bind('reset', this.addAll, this);
+			this.Contacts.bind('all', this.render, this);
+			this.Contacts.bind('remove', this.remove, this);
 		},
 
 		addAll: function() {

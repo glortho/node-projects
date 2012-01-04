@@ -62,7 +62,7 @@ for ( var r in routes ) {
 	}
 }
 
-app.post('/organizations/:id/add_contact', routes.organizations.add_contact);
+app.post('/organizations/:id/contact'		, routes.organizations.contact.create);
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

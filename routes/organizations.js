@@ -47,29 +47,31 @@ module.exports = function(app, models, lib) {
 			});
 		},
 
-		add_contact: function(req, res) {
-			var org_id = req.params.id,
-				contact = new Contact({
-					organization: org_id,
-					name_full: req.body.name_full
-				});
-
-			contact.save(function(err) {
-				if ( err ) {
-					
-				} else {
-					Organization.findById(org_id, function(err, org) {
-						org.contacts.push(contact);
-						org.save(function(err) {
-							if ( err ) {
-							
-							} else {
-								res.send(contact);
-							}
-						});
+		contact: {
+			create: function(req, res) {
+				var org_id = req.params.id,
+					contact = new Contact({
+						organization: org_id,
+						name_full: req.body.name_full
 					});
-				}
-			});
+
+				contact.save(function(err) {
+					if ( err ) {
+						
+					} else {
+						Organization.findById(org_id, function(err, org) {
+							org.contacts.push(contact);
+							org.save(function(err) {
+								if ( err ) {
+								
+								} else {
+									res.send(contact);
+								}
+							});
+						});
+					}
+				});
+			}
 		}
 	};
 };
