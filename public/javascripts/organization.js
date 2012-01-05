@@ -6,7 +6,7 @@ $(function() {
 		// models
 
 	pmt.Contact = Backbone.Model.extend({
-		
+
 	});
 
 		// collections
@@ -90,7 +90,10 @@ $(function() {
 				type: 'sub'
 			});
 			this.el.append(view.render().el);
-			if ( !pmt.Contacts._byId[contact.id] ) pmt.Contacts.add(contact);
+			if ( !pmt.Contacts._byId[contact.id] ) {
+				contact.collection = pmt.Contacts;
+				pmt.Contacts.add(contact);
+			}
 		},
 		createOnEnter: function(e) {
 			var name = this.input.value;
