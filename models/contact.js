@@ -1,8 +1,14 @@
 function make(Schema, mongoose) {
-	var ContactSchema = new	Schema({
+
+	var Details = new	Schema({
+		text			: String
+	}),
+
+	ContactSchema = new	Schema({
 		organization	: {type: Schema.ObjectId, ref: 'Organization'},
 		name_first		: String,
-		name_last		: String
+		name_last		: String,
+		details			: [Details]
 	});
 
 	ContactSchema

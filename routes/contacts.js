@@ -4,13 +4,17 @@ module.exports = function(app, models, lib) {
 
 	return {
 		index: function(req, res) {
-			Contact.find({}, function(err, contacts) {
-				if ( !lib.is_json(req) ) {
-					res.render('contacts', {title: 'Contacts', contacts: contacts});
-				} else {
-					res.send(contacts);
-				}
-			});
+			Contact
+				.find({})
+				.populate('organization')
+				.asc('name_last')
+				.run(function(err, contacts) {
+					if ( !lib.is_json(req) ) {
+						res.render('contacts', {title: 'Contacts', contacts: contacts});
+					} else {
+						res.send(contacts);
+					}
+				});
 		},
 	
 		show: function(req, res) {

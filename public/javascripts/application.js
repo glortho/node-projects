@@ -2,7 +2,11 @@ window.pmt = {
 	ContactSubTab: {},
 
 	init: function() {
-		var that = this;
+		var that = this,
+			tab = this.cookie.get('tab');
+
+		if ( tab ) this.select_tab(tab);
+
 		$('#tabs').find('a').on('click', function() {
 			that.select_tab(this);
 			return false;
@@ -46,15 +50,19 @@ window.pmt = {
 	},
 
 	select_tab: function(el) {
-		var id = el.id.replace('tab-', ''),
+		var isobj = typeof el == 'object',
+			element = isobj ? el : document.getElementById('tab-' + el),
+			id = isobj ? el.id.replace('tab-', '') : el,
 			wrapper = document.getElementById(id + '-wrapper');
 
-		$(el)
+		$(element)
 			.addClass('selected')
 			.siblings().removeClass('selected');
 
 		$('#content').find('.wrapper').not(wrapper).hide();
 		wrapper.style.display = 'block';
+
+		return isobj ? pmt.cookie.set('tab', id) : true;
 	}
 };
 
