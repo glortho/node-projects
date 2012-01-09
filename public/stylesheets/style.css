@@ -8,6 +8,7 @@ form.submain{padding:5px;}
 form.submain input{font-size:12pt;width:288px}
 form.detail input{position:relative;width:150px;top:-3px}
 .button{font-size:14pt;padding:5px;margin-left:0;border:1pt #ddd solid;background-color:#ddd;text-align:right}
+.sub-contact .add-detail{font-size:10pt;padding:2px}
 .item{text-align:left}
 .section div{font-size:22pt;margin:5px 0 10px 0}
 .small{font-size:11pt;color:#999;position:relative;top:-3px}

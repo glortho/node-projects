@@ -126,7 +126,8 @@ $(function() {
 		className: 'item',
 		events: {
 			'click .remove': 'clear',
-			'click .add-detail': 'addDetail'
+			'click .add-detail': 'detailAdd',
+			'submit form.detail': 'detailSave'
 		},
 		tmpl_add_detail: _.template(document.getElementById('tmpl-add-detail').innerHTML),
 
@@ -135,17 +136,20 @@ $(function() {
 			this.model.bind('destroy', this.remove, this);
 		},
 
-		addDetail: function(event) {
+		detailAdd: function(event) {
 			var form = this.tmpl_add_detail,
 				that = this;
 
 			$(event.target).before(form);
-			$(form)
-				.find('input').focus().end()
-				.on('submit', function() {
-					console.log(that.model);
-					return false;
-				});
+			$(form).find('input').focus();
+		},
+
+		detailSave: function(event) {
+			var val = event.target[0].value;
+			this.model.attributes.details.push(val);
+			this.model.save();
+
+			$(event.target).replaceWith(val); // TODO: test with sub
 		},
 
 		clear: function() {
@@ -179,6 +183,10 @@ $(function() {
 			
 			$(this.el).html(this.template(json));
 			return this;
+		},
+
+		update: function() {
+			
 		}
 	});
 

@@ -30,12 +30,16 @@ script(type='text/template', id='tmpl-contact-item')
 	|		<span class='small'>@</span> <a href='/organizations/<%= organization._id %>'><%= organization.title %></a>
 	|	<% } %>
 	|	<% for (var i = 0; i < details.length; i++) { %>
-	|		<span class='small'>@</span> <%= details[i] %>
+	|		<%= details[i] %>  
 	|	<% } %>
 	|	<a class='add-detail button'>+</a>
 
 script(type='text/template', id='tmpl-sub-contact')
 	|	<a id='sub-contact-<%= _id %>' href='/contacts/<%= _id %>'><%= (name_first || '') + ' ' + (typeof name_last != 'undefined' ? name_last : '') %></a>
+	|	<% for (var i = 0; i < details.length; i++) { %>
+	|		<%= details[i] %>&nbsp;
+	|	<% } %>
+	|	<a class='add-detail button'>+</a>
 
 script(type='text/template', id='tmpl-sub-contact-form')
 	|	<form id='subform' class='submain' action="#" method="post" accept-charset="utf-8" style='position:absolute;left:0px;top:0px' onsubmit='return false;'>

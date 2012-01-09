@@ -47,7 +47,7 @@ module.exports = function(app, models, lib) {
 			});
 		},
 
-		contact: {
+		contact: { // TODO: these should really go to contact router
 			create: function(req, res) {
 				var org_id = req.params.id,
 					contact = new Contact({
@@ -70,6 +70,16 @@ module.exports = function(app, models, lib) {
 							});
 						});
 					}
+				});
+			},
+			update: function(req, res) {
+				Contact.findById(req.params.contact_id, function(err, contact) {
+					contact.details = req.body.details;
+					contact.save(function(err) {
+						if ( !err ) {
+							res.send(contact);
+						}
+					});
 				});
 			}
 		}

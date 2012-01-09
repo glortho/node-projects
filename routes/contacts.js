@@ -35,6 +35,21 @@ module.exports = function(app, models, lib) {
 			});
 		},
 
+		update: function(req, res) {
+			Contact.findById(req.params.id, function(err, contact) {
+				if ( err ) {
+					//
+				} else {
+					contact.details = req.body.details;
+					contact.save(function(err) {
+						if ( !err ) {
+							res.send(contact);
+						}
+					});
+				}
+			});
+		},
+
 		destroy: function(req, res) {
 			Contact.remove({_id: req.params.id}, function() {
 				res.redirect('/contacts');

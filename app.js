@@ -58,11 +58,13 @@ for ( var r in routes ) {
 		app.get( '/' + r + '.:format?'		, routes[r].index);
 		app.post('/' + r + '.:format?'		, routes[r].create);
 		app.get( '/' + r + '/:id.:format?'	, routes[r].show);
+		app.put( '/' + r + '/:id.:format?'	, routes[r].update);
 		app.del( '/' + r + '/:id.:format?'	, routes[r].destroy);
 	}
 }
 
-app.post('/organizations/:id/contact'		, routes.organizations.contact.create);
+app.post('/organizations/:id/contact'					, routes.organizations.contact.create);
+app.put('/organizations/:id/contact/:contact_id'		, routes.organizations.contact.update);
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
