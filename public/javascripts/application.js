@@ -3,7 +3,7 @@ window.pmt = {
 
 	init: function() {
 		var that = this,
-			tab = this.cookie.get('tab');
+				tab = pmt.cookie.get('tab');
 
 		if ( tab ) this.select_tab(tab);
 
